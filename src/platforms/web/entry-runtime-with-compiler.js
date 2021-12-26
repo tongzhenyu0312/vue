@@ -19,8 +19,10 @@ Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  // 校验el
   el = el && query(el)
 
+  // 排除将body、html作为el
   /* istanbul ignore if */
   if (el === document.body || el === document.documentElement) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -30,7 +32,8 @@ Vue.prototype.$mount = function (
   }
 
   const options = this.$options
-  // resolve template/el and convert to render function
+
+  // 解析template下的元素 并 将其转换为render函数挂载到options上
   if (!options.render) {
     let template = options.template
     if (template) {
@@ -79,6 +82,8 @@ Vue.prototype.$mount = function (
       }
     }
   }
+
+  // 渲染dom（mount负责）
   return mount.call(this, el, hydrating)
 }
 

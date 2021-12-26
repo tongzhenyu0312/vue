@@ -7,7 +7,8 @@ export * from './class'
 export * from './element'
 
 /**
- * Query an element selector if it's not an element already.
+ * Query an element selector if it's not an element already.、
+ * 若el不是一个元素（字符串），使用元素选择器查询
  */
 export function query (el: string | Element): Element {
   if (typeof el === 'string') {
