@@ -41,6 +41,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
     defineReactive
   }
 
+  // related to reactivity
   Vue.set = set
   Vue.delete = del
   Vue.nextTick = nextTick
@@ -51,6 +52,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
     return obj
   }
 
+  // vue options
   Vue.options = Object.create(null)
   ASSET_TYPES.forEach(type => {
     Vue.options[type + 's'] = Object.create(null)
@@ -60,10 +62,16 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // components with in Weex's multi-instance scenarios.
   Vue.options._base = Vue
 
+  // add keep-alive to Vue.options.components
   extend(Vue.options.components, builtInComponents)
 
+  //</T>
+  // 定义Vue.use
   initUse(Vue)
+  // 定义Vue.mixin
   initMixin(Vue)
+  // 定义Vue.extend
   initExtend(Vue)
+  // 定义Vue.component Vue.filter Vue.directive
   initAssetRegisters(Vue)
 }

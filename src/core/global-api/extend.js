@@ -30,9 +30,15 @@ export function initExtend (Vue: GlobalAPI) {
       validateComponentName(name)
     }
 
+    /**
+     * 定义VueComponent构造函数
+     * VueCom继承Vue
+     */
     const Sub = function VueComponent (options) {
       this._init(options)
     }
+
+    // VueCom继承Vue
     Sub.prototype = Object.create(Super.prototype)
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
