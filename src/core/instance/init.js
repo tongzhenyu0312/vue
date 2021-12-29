@@ -18,6 +18,9 @@ export function initMixin (Vue: Class<Component>) {
     // a uid
     vm._uid = uid++
 
+
+
+    // Note 性能相关
     let startTag, endTag
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
@@ -26,8 +29,15 @@ export function initMixin (Vue: Class<Component>) {
       mark(startTag)
     }
 
+
+
     // a flag to avoid this being observed
+    // Note 标识对象时Vue实例，避免将来被observed
     vm._isVue = true
+
+
+
+    // Note 合并Vue构造器的options（指令 过滤器 组件等）=> vm.$options
     // merge options
     if (options && options._isComponent) {
       // optimize internal component instantiation
@@ -41,20 +51,35 @@ export function initMixin (Vue: Class<Component>) {
         vm
       )
     }
+
+
+    /**
+     * Note 设置 _renderProxy
+     *
+     * 判断Proxy是否存在
+     */
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {
       initProxy(vm)
     } else {
       vm._renderProxy = vm
     }
+
+
+
     // expose real self
     vm._self = vm
     initLifecycle(vm)
     initEvents(vm)
     initRender(vm)
+    // 触发生命周期钩子函数
     callHook(vm, 'beforeCreate')
+
+
+    // injections
     initInjections(vm) // resolve injections before data/props
     initState(vm)
+    // provide
     initProvide(vm) // resolve provide after data/props
     callHook(vm, 'created')
 
