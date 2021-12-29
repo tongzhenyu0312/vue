@@ -55,6 +55,7 @@ export function initLifecycle (vm: Component) {
   vm._isBeingDestroyed = false
 }
 
+// Note: _update $forceUpdate $destroy
 export function lifecycleMixin (Vue: Class<Component>) {
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
@@ -64,6 +65,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
+    // Note: 调用patch
     if (!prevVnode) {
       // initial render
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)

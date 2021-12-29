@@ -51,6 +51,9 @@ export function initRender (vm: Component) {
   }
 }
 
+
+
+// Note: $nextTick _render
 export function renderMixin (Vue: Class<Component>) {
   // install runtime convenience helpers
   installRenderHelpers(Vue.prototype)
@@ -59,8 +62,10 @@ export function renderMixin (Vue: Class<Component>) {
     return nextTick(fn, this)
   }
 
+  // Note: 内部调用传入的render
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
+    // Note: 传入的渲染函数
     const { render, _parentVnode } = vm.$options
 
     if (_parentVnode) {
@@ -76,6 +81,7 @@ export function renderMixin (Vue: Class<Component>) {
     // render self
     let vnode
     try {
+      // Note: h === $createElement
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)
