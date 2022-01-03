@@ -14,15 +14,20 @@ const idToTemplate = cached(id => {
   return el && el.innerHTML
 })
 
+// 提前将原函数$mount存储，在实现了特定平台函数重写的基础上，又保证了原函数不变化
 const mount = Vue.prototype.$mount
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
-  // 校验el
+  // 参数：
+  // el: vue实例挂载的dom节点
+  // hydrate: 不明
+
+  // 1.将el转换为Element
   el = el && query(el)
 
-  // 排除将body、html作为el
+  // 2. 若el为body或html元素，结束函数（开发环境warn警告）
   /* istanbul ignore if */
   if (el === document.body || el === document.documentElement) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -31,9 +36,8 @@ Vue.prototype.$mount = function (
     return this
   }
 
+  // 3. 若没有render函数，将template编译为render函数，存储在 this.$options.render上
   const options = this.$options
-
-  // 解析template下的元素 并 将其转换为render函数挂载到options上
   if (!options.render) {
     let template = options.template
     if (template) {
@@ -83,7 +87,7 @@ Vue.prototype.$mount = function (
     }
   }
 
-  // 渲染dom（mount负责）
+  // 4. 挂载
   return mount.call(this, el, hydrating)
 }
 
