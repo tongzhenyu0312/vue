@@ -3,10 +3,9 @@ import { initGlobalAPI } from './global-api/index'
 import { isServerRendering } from 'core/util/env'
 import { FunctionalRenderContext } from 'core/vdom/create-functional-component'
 
-// 给Vue添加静态方法
+// 给Vue添加一些私有成员
 initGlobalAPI(Vue)
 
-// 服务端渲染有关
 Object.defineProperty(Vue.prototype, '$isServer', {
   get: isServerRendering
 })
@@ -23,6 +22,7 @@ Object.defineProperty(Vue, 'FunctionalRenderContext', {
   value: FunctionalRenderContext
 })
 
+// 添加私有属性Vue.version
 Vue.version = '__VERSION__'
 
 export default Vue

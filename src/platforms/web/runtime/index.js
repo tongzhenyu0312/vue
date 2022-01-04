@@ -1,5 +1,4 @@
 /* @flow */
-
 import Vue from 'core/index'
 import config from 'core/config'
 import { extend, noop } from 'shared/util'
@@ -20,7 +19,7 @@ import platformDirectives from './directives/index'
 import platformComponents from './components/index'
 
 // install platform specific utils
-// 安装平台特有的工具
+// 在私有属性Vue.config上添加一些工具
 Vue.config.mustUseProp = mustUseProp
 Vue.config.isReservedTag = isReservedTag
 Vue.config.isReservedAttr = isReservedAttr
@@ -28,11 +27,12 @@ Vue.config.getTagNamespace = getTagNamespace
 Vue.config.isUnknownElement = isUnknownElement
 
 // install platform runtime directives & components
-// 注册平台相关的运行时指令与组件
+// 在私有属性Vue.options上混入一些 【平台级别】指令与组件
 extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
+// Vue原型对象上添加patch方法
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method

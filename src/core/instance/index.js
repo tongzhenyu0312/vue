@@ -5,6 +5,7 @@ import { eventsMixin } from './events'
 import { lifecycleMixin } from './lifecycle'
 import { warn } from '../util/index'
 
+// Vue构造器本尊
 function Vue (options) {
   if (process.env.NODE_ENV !== 'production' &&
     !(this instanceof Vue)
@@ -14,7 +15,7 @@ function Vue (options) {
   this._init(options)
 }
 
-// Note: 给Vue的原型混入方法或属性
+// Vue原型对象上添加一些成员
 initMixin(Vue)
 stateMixin(Vue)
 eventsMixin(Vue)
