@@ -19,7 +19,7 @@ import {
 } from '../util/index'
 
 export function initGlobalAPI (Vue: GlobalAPI) {
-  // config
+  // 添加私有属性Vue.config（该属性只读）
   const configDef = {}
   configDef.get = () => config
   if (process.env.NODE_ENV !== 'production') {
@@ -31,6 +31,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   }
   Object.defineProperty(Vue, 'config', configDef)
 
+  // 添加一些私有的工具方法 Vue.util。这些工具方法不准备暴露给开发者使用，除非你对风险有足够的了解
   // exposed util methods.
   // NOTE: these are not considered part of the public API - avoid relying on
   // them unless you are aware of the risk.
@@ -41,37 +42,52 @@ export function initGlobalAPI (Vue: GlobalAPI) {
     defineReactive
   }
 
+  // 添加一些和响应式有关的私有属性 Vue.set Vue.delete Vue.nextTick
+  // https://cn.vuejs.org/v2/api/#Vue-set
+  // https://cn.vuejs.org/v2/api/#Vue-delete
+  // https://cn.vuejs.org/v2/api/#Vue-nextTick
   // related to reactivity
   Vue.set = set
   Vue.delete = del
   Vue.nextTick = nextTick
 
+  // 添加显式的可观察api
+  // https://cn.vuejs.org/v2/api/#Vue-observable
   // 2.6 explicit observable API
   Vue.observable = <T>(obj: T): T => {
     observe(obj)
     return obj
   }
 
+  // 添加Vue.options 内部包含了 components, directives, filters
   // vue options
   Vue.options = Object.create(null)
   ASSET_TYPES.forEach(type => {
     Vue.options[type + 's'] = Object.create(null)
   })
 
+  // 添加Vue._base
   // this is used to identify the "base" constructor to extend all plain-object
   // components with in Weex's multi-instance scenarios.
   Vue.options._base = Vue
 
+  // Vue.components中加入 keep-alive
   // add keep-alive to Vue.options.components
   extend(Vue.options.components, builtInComponents)
 
   //</T>
-  // 定义Vue.use
+  // 添加Vue.use https://cn.vuejs.org/v2/api/#Vue-use
   initUse(Vue)
-  // 定义Vue.mixin
+
+  // 添加Vue.mixin https://cn.vuejs.org/v2/api/#Vue-mixin
   initMixin(Vue)
-  // 定义Vue.extend
+
+  // 添加Vue.extend https://cn.vuejs.org/v2/api/#Vue-extend
   initExtend(Vue)
-  // 定义Vue.component Vue.filter Vue.directive
+
+  // 添加 Vue.component Vue.filter Vue.directive
+  // https://cn.vuejs.org/v2/api/#Vue-component
+  // https://cn.vuejs.org/v2/api/#Vue-filter
+  // https://cn.vuejs.org/v2/api/#Vue-directive
   initAssetRegisters(Vue)
 }
