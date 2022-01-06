@@ -86,6 +86,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   initExtend(Vue)
 
   // 添加 Vue.component Vue.filter Vue.directive
+  // 这几个API可以被定义在一起，是因为他们的参数类型相似
   // https://cn.vuejs.org/v2/api/#Vue-component
   // https://cn.vuejs.org/v2/api/#Vue-filter
   // https://cn.vuejs.org/v2/api/#Vue-directive
