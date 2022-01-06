@@ -18,6 +18,7 @@ export function initExtend (Vue: GlobalAPI) {
    */
   Vue.extend = function (extendOptions: Object): Function {
     extendOptions = extendOptions || {}
+    // 父类为Vue
     const Super = this
     const SuperId = Super.cid
     const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {})
@@ -30,16 +31,14 @@ export function initExtend (Vue: GlobalAPI) {
       validateComponentName(name)
     }
 
-    /**
-     * 定义VueComponent构造函数
-     * VueCom继承Vue
-     */
+    // 定义子类(组件)
     const Sub = function VueComponent (options) {
       this._init(options)
     }
 
-    // VueCom继承Vue
+    // 「子类原型对象」设置为 原型链中有「Vue的原型对象」的对象
     Sub.prototype = Object.create(Super.prototype)
+    // 「子类原型对象」的constructor指向子类
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
     Sub.options = mergeOptions(
@@ -82,6 +81,7 @@ export function initExtend (Vue: GlobalAPI) {
 
     // cache constructor
     cachedCtors[SuperId] = Sub
+    // 返回子类（组件）
     return Sub
   }
 }
