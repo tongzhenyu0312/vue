@@ -61,20 +61,17 @@ export function initRender (vm: Component) {
 }
 
 
-
-// Note: $nextTick _render
 export function renderMixin (Vue: Class<Component>) {
   // install runtime convenience helpers
+  // Vue原型对象上添加渲染相关的helper
   installRenderHelpers(Vue.prototype)
 
   Vue.prototype.$nextTick = function (fn: Function) {
     return nextTick(fn, this)
   }
 
-  // Note: 内部调用传入的render
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
-    // Note: 传入的渲染函数
     const { render, _parentVnode } = vm.$options
 
     if (_parentVnode) {
@@ -90,7 +87,7 @@ export function renderMixin (Vue: Class<Component>) {
     // render self
     let vnode
     try {
-      // Note: h === $createElement
+      // 核心代码：调用传入的render函数（修改this指向、传递实参（也就是形参h）），生成虚拟dom
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)

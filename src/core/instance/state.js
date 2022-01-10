@@ -330,6 +330,7 @@ export function stateMixin (Vue: Class<Component>) {
   dataDef.get = function () { return this._data }
   const propsDef = {}
   propsDef.get = function () { return this._props }
+  // 不允许给$data $props赋值
   if (process.env.NODE_ENV !== 'production') {
     dataDef.set = function () {
       warn(
@@ -343,14 +344,15 @@ export function stateMixin (Vue: Class<Component>) {
     }
   }
 
+  // Vue原型对象添加$data和$props
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 
-  // Note: Vue原型添加 $set $delete
+  // Vue原型独享添加$set和$delete方法
   Vue.prototype.$set = set
   Vue.prototype.$delete = del
 
-  // Note: Vue原型添加$watch
+  // Vue原型对象添加$watch方法
   Vue.prototype.$watch = function (
     expOrFn: string | Function,
     cb: any,

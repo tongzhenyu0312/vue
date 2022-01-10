@@ -56,8 +56,11 @@ export function updateComponentListeners (
 export function eventsMixin (Vue: Class<Component>) {
   const hookRE = /^hook:/
 
+  // 发布订阅模式-事件注册
   Vue.prototype.$on = function (event: string | Array<string>, fn: Function): Component {
     const vm: Component = this
+
+    // 多个事件绑定同一个事件处理函数
     if (Array.isArray(event)) {
       for (let i = 0, l = event.length; i < l; i++) {
         vm.$on(event[i], fn)
