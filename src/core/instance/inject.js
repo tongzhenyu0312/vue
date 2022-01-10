@@ -4,6 +4,7 @@ import { hasOwn } from 'shared/util'
 import { warn, hasSymbol } from '../util/index'
 import { defineReactive, toggleObserving } from '../observer/index'
 
+// 将vm.$options.provide转换为_provided
 export function initProvide (vm: Component) {
   const provide = vm.$options.provide
   if (provide) {
@@ -14,6 +15,7 @@ export function initProvide (vm: Component) {
 }
 
 export function initInjections (vm: Component) {
+  // 获取当前vm的上级Vue实例provided的值
   const result = resolveInject(vm.$options.inject, vm)
   if (result) {
     toggleObserving(false)

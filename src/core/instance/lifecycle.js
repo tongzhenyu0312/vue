@@ -35,6 +35,7 @@ export function initLifecycle (vm: Component) {
   // locate first non-abstract parent
   let parent = options.parent
   if (parent && !options.abstract) {
+    // 向上一直找到非abstract的父对象，将当前Vue实例对象作为其 $children中的一个
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
     }
@@ -47,6 +48,7 @@ export function initLifecycle (vm: Component) {
   vm.$children = []
   vm.$refs = {}
 
+  // vm._xxx属性，是作为私有属性
   vm._watcher = null
   vm._inactive = null
   vm._directInactive = false

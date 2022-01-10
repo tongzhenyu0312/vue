@@ -10,12 +10,12 @@ import {
 import { updateListeners } from '../vdom/helpers/index'
 
 export function initEvents (vm: Component) {
-  // 事件存储中心
+  // Vue实例对象的_events属性：事件处理中心
   vm._events = Object.create(null)
   vm._hasHookEvent = false
-  // init parent attached events
 
-  // 父组件事件注册到子组件中
+  // init parent attached events
+  // 获取父组件上的事件，添加到当前组件？？？
   const listeners = vm.$options._parentListeners
   if (listeners) {
     updateComponentListeners(vm, listeners)

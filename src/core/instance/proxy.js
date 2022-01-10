@@ -78,12 +78,14 @@ if (process.env.NODE_ENV !== 'production') {
   initProxy = function initProxy (vm) {
     if (hasProxy) {
       // determine which proxy handler to use
+      // 判断环境内是否有proxy，若有的话，使用Proxy实例对象作为 vm._renderProxy
       const options = vm.$options
       const handlers = options.render && options.render._withStripped
         ? getHandler
         : hasHandler
       vm._renderProxy = new Proxy(vm, handlers)
     } else {
+      // 否则，将Vue实例对象赋值给 vm._renderProxy
       vm._renderProxy = vm
     }
   }
