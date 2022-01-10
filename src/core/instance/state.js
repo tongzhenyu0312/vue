@@ -48,7 +48,9 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 export function initState (vm: Component) {
   vm._watchers = []
   const opts = vm.$options
+  // 将props数据转为响应式，并注入到vue实例
   if (opts.props) initProps(vm, opts.props)
+  // 将methods注入vue实例（判断各种类型和边界）
   if (opts.methods) initMethods(vm, opts.methods)
   if (opts.data) {
     initData(vm)
@@ -112,7 +114,9 @@ function initProps (vm: Component, propsOptions: Object) {
 function initData (vm: Component) {
   let data = vm.$options.data
   data = vm._data = typeof data === 'function'
+    // 组件中的data是一个函数
     ? getData(data, vm)
+    // 根组件中的data是一个对象
     : data || {}
   if (!isPlainObject(data)) {
     data = {}
@@ -129,6 +133,7 @@ function initData (vm: Component) {
   let i = keys.length
   while (i--) {
     const key = keys[i]
+    // 判断methods重名
     if (process.env.NODE_ENV !== 'production') {
       if (methods && hasOwn(methods, key)) {
         warn(
@@ -137,6 +142,7 @@ function initData (vm: Component) {
         )
       }
     }
+    // 判断props重名
     if (props && hasOwn(props, key)) {
       process.env.NODE_ENV !== 'production' && warn(
         `The data property "${key}" is already declared as a prop. ` +
@@ -144,10 +150,13 @@ function initData (vm: Component) {
         vm
       )
     } else if (!isReserved(key)) {
+      // 以_data注入Vue实例
       proxy(vm, `_data`, key)
     }
   }
+
   // observe data
+  // 将data转为响应式
   observe(data, true /* asRootData */)
 }
 
