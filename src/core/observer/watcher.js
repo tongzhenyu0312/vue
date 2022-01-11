@@ -58,6 +58,7 @@ export default class Watcher {
     if (options) {
       this.deep = !!options.deep
       this.user = !!options.user
+      // 懒更新：若是首次渲染，lazy值为false；若是更新，lazy值为true。
       this.lazy = !!options.lazy
       this.sync = !!options.sync
       this.before = options.before
