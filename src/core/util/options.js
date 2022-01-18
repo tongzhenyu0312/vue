@@ -25,6 +25,8 @@ import {
  * Option overwriting strategies are functions that handle
  * how to merge a parent option value and a child option
  * value into the final value.
+ * 选项合并策略
+ * 决定了对于options中的某些属性，应该合并为什么样的值
  */
 const strats = config.optionMergeStrategies
 
@@ -45,6 +47,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 /**
  * Helper that recursively merges two data objects together.
+ * 深度递归合并两个data对象
  */
 function mergeData (to: Object, from: ?Object): Object {
   if (!from) return to
@@ -101,6 +104,7 @@ export function mergeDataOrFn (
       )
     }
   } else {
+    // 返回值mergedInstanceDataFn作为合并后的options.data
     return function mergedInstanceDataFn () {
       // instance merge
       const instanceData = typeof childVal === 'function'
@@ -110,6 +114,7 @@ export function mergeDataOrFn (
         ? parentVal.call(vm, vm)
         : parentVal
       if (instanceData) {
+        // 合并实例data与默认data
         return mergeData(instanceData, defaultData)
       } else {
         return defaultData
@@ -118,6 +123,14 @@ export function mergeDataOrFn (
   }
 }
 
+/**
+ *
+ * options合并时，data属性的合并策略函数
+ * @param {*} parentVal 父对象.data
+ * @param {*} childVal 子对象.data
+ * @param {*} vm
+ * @returns 返回值作为options.data的值
+ */
 strats.data = function (
   parentVal: any,
   childVal: any,
@@ -384,6 +397,12 @@ function assertObjectType (name: string, value: any, vm: ?Component) {
 /**
  * Merge two option objects into a new one.
  * Core utility used in both instantiation and inheritance.
+ * 将两个option对象合并为一个新对象，返回该新对象
+ * 这是一个核心工具函数，在实例化和继承时都会使用到
+ * TODO: 这个命名，可能还涉及父子组件的合并
+ * @param {*} parent Vue.options对象
+ * @param {*} child 实例化时传入的options对象
+ * @param {*} vm
  */
 export function mergeOptions (
   parent: Object,
@@ -405,7 +424,7 @@ export function mergeOptions (
   // Apply extends and mixins on the child options,
   // but only if it is a raw options object that isn't
   // the result of another mergeOptions call.
-  // Only merged options has the _base property.
+  // Only merged options has the _base property. 只有合并过的选项才有_base这个属性
   if (!child._base) {
     if (child.extends) {
       parent = mergeOptions(parent, child.extends, vm)
@@ -417,20 +436,25 @@ export function mergeOptions (
     }
   }
 
+  // 合并后的新对象
   const options = {}
+
   let key
   for (key in parent) {
     mergeField(key)
   }
   for (key in child) {
     if (!hasOwn(parent, key)) {
+      // 用户的options需要筛掉 父对象中存在的属性
       mergeField(key)
     }
   }
+
   function mergeField (key) {
     const strat = strats[key] || defaultStrat
     options[key] = strat(parent[key], child[key], vm, key)
   }
+
   return options
 }
 

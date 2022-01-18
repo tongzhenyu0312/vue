@@ -18,6 +18,8 @@ import {
 
 const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
 
+
+
 /**
  * In some cases we may want to disable observation inside a component's
  * update computation.
@@ -40,11 +42,17 @@ export class Observer {
   vmCount: number; // number of vms that have this object as root $data
 
   constructor (value: any) {
+    // observer.value存储 目标值value
     this.value = value
+    // observer.dep存储一个依赖
     this.dep = new Dep()
+    // TODO: 初始化vmCount
     this.vmCount = 0
+    // 在value上定义一个 不可枚举的属性__ob__（不会被遍历出来），指向当前observer
     def(value, '__ob__', this)
+
     if (Array.isArray(value)) {
+      // 数组的响应式处理
       if (hasProto) {
         protoAugment(value, arrayMethods)
       } else {
@@ -52,6 +60,7 @@ export class Observer {
       }
       this.observeArray(value)
     } else {
+      // 遍历数据添加getter setter
       this.walk(value)
     }
   }
@@ -60,6 +69,7 @@ export class Observer {
    * Walk through all properties and convert them into
    * getter/setters. This method should only be called when
    * value type is Object.
+   * 遍历对象内所有属性，将其转换为getter setter
    */
   walk (obj: Object) {
     const keys = Object.keys(obj)
@@ -106,32 +116,49 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * Attempt to create an observer instance for a value,
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
+ * 尝试给一个值 创建一个Observer实例对象，返回该实例对象
+ * @param {*} value 目标值
+ * @param {*} asRootData
+ * @returns Observer实例对象
  */
 export function observe (value: any, asRootData: ?boolean): Observer | void {
   if (!isObject(value) || value instanceof VNode) {
+    // 非对象 或 虚拟dom实例对象 不支持
     return
   }
+
   let ob: Observer | void
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    // value已存在Observer实例对象的话，使用原有的
     ob = value.__ob__
   } else if (
-    shouldObserve &&
-    !isServerRendering() &&
-    (Array.isArray(value) || isPlainObject(value)) &&
-    Object.isExtensible(value) &&
-    !value._isVue
+    shouldObserve && // 开关，一般为true
+    !isServerRendering() && // 非服务端渲染
+    (Array.isArray(value) || isPlainObject(value)) && // 数组或纯对象
+    Object.isExtensible(value) && // 值可扩展（没有被seal或frooze）
+    !value._isVue // 不支持观察 Vue实例对象
   ) {
     ob = new Observer(value)
   }
+
   if (asRootData && ob) {
     ob.vmCount++
   }
+
   return ob
 }
 
 /**
  * Define a reactive property on an Object.
+ * 在对象内定义响应式属性
+ * @param {*} obj 目标对象
+ * @param {*} key 属性键
+ * @param {*} val TODO:
+ * @param {*} customSetter TODO:
+ * @param {*} shallow 是否为浅拷贝
+ * @returns undefined
  */
+
 export function defineReactive (
   obj: Object,
   key: string,
@@ -139,21 +166,27 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  // 局部变量存储一个 Dep实例对象，作为依赖
   const dep = new Dep()
-
+  // 只支持可配置的属性
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
     return
   }
 
   // cater for pre-defined getter/setters
+  // 考虑数据本来是 getter setter的场景
   const getter = property && property.get
   const setter = property && property.set
   if ((!getter || setter) && arguments.length === 2) {
+    // 形参val存储值
     val = obj[key]
   }
 
+  // 深度响应式时，递归观察数据
   let childOb = !shallow && observe(val)
+
+  // 将对象的属性设置为getter setter
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -173,6 +206,7 @@ export function defineReactive (
     set: function reactiveSetter (newVal) {
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */
+      // 值为NaN时，NaN !== NaN
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return
       }
@@ -183,10 +217,12 @@ export function defineReactive (
       // #7981: for accessor properties without setter
       if (getter && !setter) return
       if (setter) {
+        // 用户有设置setter时，执行setter
         setter.call(obj, newVal)
       } else {
         val = newVal
       }
+      // 新值可能也是对象，需要观察起来
       childOb = !shallow && observe(newVal)
       dep.notify()
     }
@@ -274,3 +310,5 @@ function dependArray (value: Array<any>) {
     }
   }
 }
+
+

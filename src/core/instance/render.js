@@ -34,7 +34,9 @@ export function initRender (vm: Component) {
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
-  // 和模板编译相关
+  /**
+   * 获取虚拟dom
+   */
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
 
 
@@ -71,6 +73,10 @@ export function renderMixin (Vue: Class<Component>) {
     return nextTick(fn, this)
   }
 
+  /**
+   * 获取vue实例的render返回的虚拟dom
+   * @returns vnode
+   */
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
     const { render, _parentVnode } = vm.$options
@@ -88,7 +94,13 @@ export function renderMixin (Vue: Class<Component>) {
     // render self
     let vnode
     try {
-      // 核心代码：调用传入的render函数（修改this指向、传递实参（也就是形参h）），生成虚拟dom
+      /**
+       * 通过执行render函数获取虚拟dom
+       * this指向vm._renderProxy（src/core/instance/init.js）指向当前Vue实例
+       * vm.$createElement 负责生成虚拟dom（src/core/instance/render.js）传说中的h函数
+       * template会被编译成一个render函数：如下
+       * https://gist.github.com/tongzhenyu0312/add3c8f5d3cf6f4a4eb83ea5007154b6
+       */
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)

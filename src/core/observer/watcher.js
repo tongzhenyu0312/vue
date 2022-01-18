@@ -42,6 +42,15 @@ export default class Watcher {
   getter: Function;
   value: any;
 
+
+  /**
+   * Watcher构造器
+   * @param {*} vm
+   * @param {*} expOrFn
+   * @param {*} cb
+   * @param {*} options
+   * @param {*} isRenderWatcher
+   */
   constructor (
     vm: Component,
     expOrFn: string | Function,
@@ -51,10 +60,12 @@ export default class Watcher {
   ) {
     this.vm = vm
     if (isRenderWatcher) {
+      // 若为渲染watcher时，vm._watcher = watcher
       vm._watcher = this
     }
     vm._watchers.push(this)
-    // options
+
+    // options选项的处理
     if (options) {
       this.deep = !!options.deep
       this.user = !!options.user
@@ -65,20 +76,25 @@ export default class Watcher {
     } else {
       this.deep = this.user = this.lazy = this.sync = false
     }
+
     this.cb = cb
-    this.id = ++uid // uid for batching
+    this.id = ++uid // uid for batching 每个Watcher有一个id
     this.active = true
     this.dirty = this.lazy // for lazy watchers
+
+    // watcher和dep相关的一些数据
     this.deps = []
     this.newDeps = []
     this.depIds = new Set()
     this.newDepIds = new Set()
+
     this.expression = process.env.NODE_ENV !== 'production'
       ? expOrFn.toString()
       : ''
+
     // parse expression for getter
     if (typeof expOrFn === 'function') {
-      this.getter = expOrFn
+      this.getter = expOrFn // 渲染watcher将updateComponent存储到watcher.getter里
     } else {
       this.getter = parsePath(expOrFn)
       if (!this.getter) {
@@ -91,19 +107,22 @@ export default class Watcher {
         )
       }
     }
-    this.value = this.lazy
-      ? undefined
-      : this.get()
+
+    // 调用this.get方法获取 this.value
+    this.value = this.lazy ? undefined : this.get()
   }
 
   /**
    * Evaluate the getter, and re-collect dependencies.
+   * 求getter的值，并重新收集依赖
    */
   get () {
     pushTarget(this)
+
     let value
     const vm = this.vm
     try {
+      // 求取getter的值
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {

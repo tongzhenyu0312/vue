@@ -12,12 +12,13 @@ import { extend, mergeOptions, formatComponentName } from '../util/index'
 
 let uid = 0
 
+// Vue初始化时被调用
 export function initMixin (Vue: Class<Component>) {
+  // Vue初始化时定义，实例化时被调用
+  // options: 选项对象
   Vue.prototype._init = function (options?: Object) {
-    // 形参options: Vue实例化时传入的选项
     // 变量vm: Vue实例对象
     const vm: Component = this
-    // a uid
     // vm._uid 作为vue实例的唯一标识
     vm._uid = uid++
 
@@ -44,6 +45,7 @@ export function initMixin (Vue: Class<Component>) {
       initInternalComponent(vm, options)
     } else {
       vm.$options = mergeOptions(
+        // 获取Vue.options (vm.constructor === Vue)
         resolveConstructorOptions(vm.constructor),
         options || {},
         vm
@@ -80,6 +82,7 @@ export function initMixin (Vue: Class<Component>) {
     // initInjections 与 initProvide 是一对用来实现 依赖注入 的函数
     // injections 完成依赖注入
     initInjections(vm) // resolve injections before data/props
+    // initState 完成 数据响应式 功能
     initState(vm)
     // provide 完成依赖提供
     initProvide(vm) // resolve provide after data/props

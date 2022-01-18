@@ -78,6 +78,10 @@ export const createEmptyVNode = (text: string = '') => {
   return node
 }
 
+/**
+ * 创建一个text类型的虚拟节点
+ * @returns vnode
+ */
 export function createTextVNode (val: string | number) {
   return new VNode(undefined, undefined, undefined, String(val))
 }

@@ -46,7 +46,9 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 }
 
 export function initState (vm: Component) {
+  // TODO: vm._watchers
   vm._watchers = []
+  // 局部变量opts，存储 Vue实例化时传入的选项对象
   const opts = vm.$options
   // 将props数据转为响应式，并注入到vue实例
   if (opts.props) initProps(vm, opts.props)
@@ -62,6 +64,8 @@ export function initState (vm: Component) {
     initWatch(vm, opts.watch)
   }
 }
+
+
 
 function initProps (vm: Component, propsOptions: Object) {
   const propsData = vm.$options.propsData || {}
@@ -111,13 +115,19 @@ function initProps (vm: Component, propsOptions: Object) {
   toggleObserving(true)
 }
 
+
 function initData (vm: Component) {
+  // 局部变量data存储 合并后的$options.data 也就是 mergedInstanceDataFn
   let data = vm.$options.data
+
+  // 局部变量和vm._data存储 data数据
   data = vm._data = typeof data === 'function'
     // 组件中的data是一个函数
     ? getData(data, vm)
     // 根组件中的data是一个对象
     : data || {}
+
+  // 兜底data非纯对象
   if (!isPlainObject(data)) {
     data = {}
     process.env.NODE_ENV !== 'production' && warn(
@@ -126,15 +136,17 @@ function initData (vm: Component) {
       vm
     )
   }
+
   // proxy data on instance
+  // 在实例上代理数据（也就是可直接通过实例访问 data里的数据）
   const keys = Object.keys(data)
   const props = vm.$options.props
   const methods = vm.$options.methods
   let i = keys.length
   while (i--) {
     const key = keys[i]
-    // 判断methods重名
     if (process.env.NODE_ENV !== 'production') {
+      // methods重名警告
       if (methods && hasOwn(methods, key)) {
         warn(
           `Method "${key}" has already been defined as a data property.`,
@@ -142,28 +154,36 @@ function initData (vm: Component) {
         )
       }
     }
-    // 判断props重名
     if (props && hasOwn(props, key)) {
+      // props重名警告
       process.env.NODE_ENV !== 'production' && warn(
         `The data property "${key}" is already declared as a prop. ` +
         `Use prop default value instead.`,
         vm
       )
     } else if (!isReserved(key)) {
-      // 以_data注入Vue实例
+      // 非保留字符（Vue中认为$和_开头的为保留标识符）
+      // 将通过实例访问属性，代理到在实例的_data访问属性
       proxy(vm, `_data`, key)
     }
   }
 
   // observe data
-  // 将data转为响应式
+  // 观察数据（实现数据响应式）
   observe(data, true /* asRootData */)
 }
 
+/**
+ * 获取原data？
+ * @param {*} data 合并后的data
+ * @param {*} vm
+ * @returns
+ */
 export function getData (data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
   pushTarget()
   try {
+    // data是函数对象，修改其中this
     return data.call(vm, vm)
   } catch (e) {
     handleError(e, vm, `data()`)

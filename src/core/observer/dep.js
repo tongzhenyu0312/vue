@@ -53,13 +53,20 @@ export default class Dep {
 // This is globally unique because only one watcher
 // can be evaluated at a time.
 Dep.target = null
+// vue2 每个组件都会通过mountComponent，有一个对应的Watcher实例对象，嵌套组件更新时，父组件的Watcher实例会入栈，等待子组件的Watcher完成
 const targetStack = []
 
+/**
+ * 收集target，并将其挂载到Dep.target上
+ */
 export function pushTarget (target: ?Watcher) {
   targetStack.push(target)
   Dep.target = target
 }
 
+/**
+ * 释放target，并将Dep.target指向栈内最新的target
+ */
 export function popTarget () {
   targetStack.pop()
   Dep.target = targetStack[targetStack.length - 1]

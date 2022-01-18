@@ -81,6 +81,7 @@ export function isPromise (val: any): boolean {
 
 /**
  * Convert a value to a string that is actually rendered.
+ * 将字符转换为需要渲染的字符
  */
 export function toString (val: any): string {
   return val == null
@@ -251,6 +252,7 @@ export function toObject (arr: Array<any>): Object {
 /* eslint-disable no-unused-vars */
 
 /**
+ * 空函数，不执行任何的操作
  * Perform no operation.
  * Stubbing args to make Flow happy without leaving useless transpiled code
  * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/).
