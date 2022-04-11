@@ -119,7 +119,7 @@ const builds = {
     env: 'production',
     banner
   },
-  // Runtime+compiler development build (Browser)
+  // Runtime+compiler development build (Browser) UMD版本构建配置
   'web-full-dev': {
     entry: resolve('web/entry-runtime-with-compiler.js'),
     dest: resolve('dist/vue.js'),

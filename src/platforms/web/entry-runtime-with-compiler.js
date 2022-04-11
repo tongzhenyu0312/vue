@@ -1,4 +1,5 @@
 /* @flow */
+// 以下是完整版Vue的构建入口
 
 import config from 'core/config'
 import { warn, cached } from 'core/util/index'
