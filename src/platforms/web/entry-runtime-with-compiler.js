@@ -32,9 +32,13 @@ Vue.prototype.$mount = function (
 
   const options = this.$options
   // resolve template/el and convert to render function
+  // 优先使用render参数，render没有传递的情况下，考虑template
   if (!options.render) {
     let template = options.template
+
+    // 创建template
     if (template) {
+      // template支持id和dom的形式
       if (typeof template === 'string') {
         if (template.charAt(0) === '#') {
           template = idToTemplate(template)
@@ -55,14 +59,17 @@ Vue.prototype.$mount = function (
         return this
       }
     } else if (el) {
+      // 没有传入template时，使用el的outerHtml代替
       template = getOuterHTML(el)
     }
+
     if (template) {
       /* istanbul ignore if */
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile')
       }
 
+      // 将template转换为render函数，挂载到options上
       const { render, staticRenderFns } = compileToFunctions(template, {
         outputSourceRange: process.env.NODE_ENV !== 'production',
         shouldDecodeNewlines,
